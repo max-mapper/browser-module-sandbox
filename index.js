@@ -44,7 +44,9 @@ Sandbox.prototype.showControls = function(container) {
       elementClass(self.outputEl).remove('hidden')
       elementClass(self.editorEl).add('hidden')
       self.emit('output')
-    } else {
+    }
+    if (el === self.editorEl) {
+      if (!self.editorEl.className.match(/hidden/)) return
       elementClass(self.editorEl).remove('hidden')
       elementClass(self.outputEl).add('hidden')
       self.emit('edit')
