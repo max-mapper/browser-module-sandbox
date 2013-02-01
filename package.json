@@ -1,0 +1,25 @@
+{
+  "name": "voxel-creator",
+  "subdomain": "voxel-creator",
+  "version": "0.0.1",
+  "description": "voxel.js game editor for html5 web browsers",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:maxogden/voxel-creator.git"
+  },
+  "dependencies": {
+    "voxel-engine": "0.4.3",
+    "browserify": "~1.16.3",
+    "toolbar": "0.0.4",
+    "browser-request": "0.2.0",
+    "snuggie": "0.0.3",
+    "element-class": "0.0.1",
+    "uglify-js": "2.2.3"
+  },
+  "engines": {
+    "node": "0.8.x"
+  }
+}
