@@ -5,54 +5,36 @@ var toolbar = require('toolbar')
 var elementClass = require('element-class')
 var request = require('browser-request')
 
-// todo read from template/file
-var defaultGame = "var createGame = require('voxel-engine')\n\n" +
-"window.game = createGame()\n\n" +
-"// rotate camera to look straight down\n" +
-"game.controls.pitchObject.rotation.x = -1.5\n\n" + 
-"var container = document.querySelector('#play')\n" +
-"game.appendTo(container)\n" + 
-"container.addEventListener('click', function() {\n  " +
-  "game.requestPointerLock(container)\n" +
-"})\n"
-
-
 module.exports = function(opts) {
-  return new Creator(opts)
+  return new Sandbox(opts)
 }
 
-function Creator(opts) {
+function Sandbox(opts) {
   var self = this
   if (!opts) opts = {}
+  this.defaultCode = opts.defaultCode || "var url = require('url')\n"
   this.outputEl = opts.output || document.body
   this.editorEl = opts.editor || document.body
+  this.snuggieAPI = opts.snuggieAPI || window.location.protocol + '//' + window.location.host
   this.showControls(opts.controls)
   this.editor = CodeMirror(this.editorEl, {
-    value: opts.functionBody || defaultGame,
+    value: opts.functionBody || this.defaultCode,
     mode:  "javascript"
-  })
-  
-  self.on('edit', function() {
-    if (typeof game !== "undefined") game = undefined
-    var canvas = self.outputEl.querySelector('canvas')
-    if (canvas) self.outputEl.removeChild(canvas)
   })
     
   self.on('output', function() {
     if (typeof game !== "undefined") game = undefined
     self.emit('bundleStart')
-    var url = window.location.protocol + '//' + window.location.host
     var body = self.editor.getValue()
-    request({method: "POST", body: body, url: url, json: true}, function(err, resp, json) {
+    request({method: "POST", body: body, url: this.snuggieAPI, json: true}, function(err, resp, json) {
       if (json.error) return alert(json.error)
       eval(json.bundle)
       self.emit('bundleEnd')
     })
-    
   })
 }
 
-Creator.prototype.showControls = function(container) {
+Sandbox.prototype.showControls = function(container) {
   var self = this
   this.controls = toolbar({el: container, noKeydown: true})
   this.controls.on('select', function(item) {
@@ -70,4 +52,4 @@ Creator.prototype.showControls = function(container) {
   })  
 }
 
-inherits(Creator, events.EventEmitter)
+inherits(Sandbox, events.EventEmitter)
