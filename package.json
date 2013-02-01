@@ -1,7 +1,7 @@
 {
   "name": "voxel-creator",
   "subdomain": "voxel-creator",
-  "version": "0.0.1",
+  "version": "0.0.1-2",
   "description": "voxel.js game editor for html5 web browsers",
   "scripts": {
     "start": "node server.js"
@@ -17,7 +17,8 @@
     "browser-request": "0.2.0",
     "snuggie": "0.0.3",
     "element-class": "0.0.1",
-    "uglify-js": "2.2.3"
+    "uglify-js": "2.2.3",
+    "ecstatic": "0.3.2"
   },
   "engines": {
     "node": "0.8.x"
