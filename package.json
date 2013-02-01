@@ -1,7 +1,7 @@
 {
   "name": "voxel-creator",
   "subdomain": "voxel-creator",
-  "version": "0.0.1-2",
+  "version": "0.0.1-6",
   "description": "voxel.js game editor for html5 web browsers",
   "scripts": {
     "start": "node server.js"

@@ -41,7 +41,6 @@ function Creator(opts) {
   self.on('output', function() {
     self.emit('bundleStart')
     var url = window.location.protocol + '//' + window.location.host
-    var url = 'http://localhost:8080'
     var body = self.editor.getValue()
     request({method: "POST", body: body, url: url, json: true}, function(err, resp, json) {
       if (json.error) return alert(json.error)
