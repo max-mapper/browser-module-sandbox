@@ -39,6 +39,7 @@ function Creator(opts) {
   })
     
   self.on('output', function() {
+    if (typeof game !== "undefined") game = undefined
     self.emit('bundleStart')
     var url = window.location.protocol + '//' + window.location.host
     var body = self.editor.getValue()
