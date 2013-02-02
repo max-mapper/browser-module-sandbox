@@ -4,6 +4,7 @@ var events = require('events')
 var toolbar = require('toolbar')
 var elementClass = require('element-class')
 var request = require('browser-request')
+var activeLine = require('./codemirror/active-line')
 
 module.exports = function(opts) {
   return new Sandbox(opts)
@@ -17,11 +18,25 @@ function Sandbox(opts) {
   this.editorEl = opts.editor || document.body
   this.snuggieAPI = opts.snuggieAPI || window.location.protocol + '//' + window.location.host
   this.showControls(opts.controls)
+  
   this.editor = CodeMirror(this.editorEl, {
     value: opts.functionBody || this.defaultCode,
-    mode:  "javascript"
+    mode:  "javascript",
+    electricChars: true,
+    autofocus: true,
+    extraKeys: {
+      "Tab": function indent(editor) {
+        if (!editor.getOption("indentWithTabs")) {
+          var size = editor.getOption("indentUnit")
+          var indentation = Array(size + 1).join(" ")
+          editor.replaceSelection(indentation, "end")
+        }
+      }
+    }
   })
-    
+
+  activeLine(this.editor)
+  
   self.on('output', function() {
     if (typeof game !== "undefined") game = undefined
     self.emit('bundleStart')
