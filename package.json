@@ -1,6 +1,6 @@
 {
   "name": "browser-module-sandbox",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "browser editor for code that gets 'compiled' on the server with node and run on the client",
   "repository": {
     "type": "git",
