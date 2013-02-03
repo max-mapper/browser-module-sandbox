@@ -21,7 +21,6 @@ function Sandbox(opts) {
   
   this.editor = CodeMirror(this.editorEl, {
     value: opts.functionBody || this.defaultCode,
-    mode:  "javascript",
     electricChars: true,
     autofocus: true,
     extraKeys: {
