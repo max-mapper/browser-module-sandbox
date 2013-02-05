@@ -29,6 +29,7 @@ var sandbox = sandbox({
   output: document.querySelector('#output'),
   controls: document.querySelector('#controls'),
   editor: document.querySelector('#edit'),
+  codemirrorOptions: {}
 })
 ```
 

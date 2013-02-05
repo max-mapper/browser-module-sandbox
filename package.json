@@ -1,17 +1,19 @@
 {
   "name": "browser-module-sandbox",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "description": "browser editor for code that gets 'compiled' on the server with node and run on the client",
   "repository": {
     "type": "git",
     "url": "git@github.com:maxogden/browser-module-sandbox.git"
   },
   "dependencies": {
-    "browserify": "~1.16.3",
+    "javascript-editor": "0.0.1",
+    "iframe": "0.0.2",
     "toolbar": "0.0.4",
     "element-class": "0.0.1",
     "browser-request": "0.2.0",
-    "inherits": "1.0.0"
+    "inherits": "1.0.0",
+    "extend": "1.1.3"
   },
   "engines": {
     "node": "0.8.x"

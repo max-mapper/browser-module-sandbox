@@ -1,10 +1,11 @@
-var CodeMirror = require('./codemirror/codemirror').CodeMirror
 var inherits = require('inherits')
+var iframe = require('iframe')
+var editor = require('javascript-editor')
 var events = require('events')
+var extend = require('extend')
 var toolbar = require('toolbar')
 var elementClass = require('element-class')
 var request = require('browser-request')
-var activeLine = require('./codemirror/active-line')
 
 module.exports = function(opts) {
   return new Sandbox(opts)
@@ -18,31 +19,22 @@ function Sandbox(opts) {
   this.editorEl = opts.editor || document.body
   this.snuggieAPI = opts.snuggieAPI || window.location.protocol + '//' + window.location.host
   this.showControls(opts.controls)
-  
-  this.editor = CodeMirror(this.editorEl, {
-    value: opts.functionBody || this.defaultCode,
-    electricChars: true,
-    autofocus: true,
-    extraKeys: {
-      "Tab": function indent(editor) {
-        if (!editor.getOption("indentWithTabs")) {
-          var size = editor.getOption("indentUnit")
-          var indentation = Array(size + 1).join(" ")
-          editor.replaceSelection(indentation, "end")
-        }
-      }
-    }
-  })
-
-  activeLine(this.editor)
-  
+  var defaultEditorOptions = {
+    value: this.defaultCode,
+    container: this.editorEl
+  }
+  var editorOptions = extend({}, defaultEditorOptions, opts.codemirrorOptions || {})
+  this.editor = editor(editorOptions)
+  this.iframe = iframe({ container: this.outputEl, scrollingDisabled: true })
+  this.iframeStyle = "<style type='text/css'> html, body { margin: 0; padding: 0; border: 0; } </style>"
   self.on('output', function() {
     if (typeof game !== "undefined") game = undefined
     self.emit('bundleStart')
-    var body = self.editor.getValue()
+    var body = self.editor.editor.getValue()
     request({method: "POST", body: body, url: this.snuggieAPI, json: true}, function(err, resp, json) {
-      if (json.error) return alert(json.error)
-      eval(json.bundle)
+      // setTimeout is because iframes report inaccurate window.innerWidth/innerHeight, even after DOMContentLoaded!
+      var body = '<script type="text/javascript"> setTimeout(function(){' + json.bundle + '}, 0)</script>'
+      self.iframe.setHTML({ head: self.iframeStyle, body: body })
       self.emit('bundleEnd')
     })
   })
