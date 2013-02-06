@@ -29,7 +29,9 @@ var sandbox = sandbox({
   output: document.querySelector('#output'),
   controls: document.querySelector('#controls'),
   editor: document.querySelector('#edit'),
-  codemirrorOptions: {}
+  codemirrorOptions: {},
+  iframeHead: string that gets prepended to the `<head>` of the output iframe,
+  iframeBody: string that gets prepended to the `<body>` of the output iframe
 })
 ```
 
