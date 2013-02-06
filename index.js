@@ -17,6 +17,8 @@ function Sandbox(opts) {
   this.defaultCode = opts.defaultCode || "var url = require('url')\n"
   this.outputEl = opts.output || document.body
   this.editorEl = opts.editor || document.body
+  this.iframeHead = opts.iframeHead || ""
+  this.iframeBody = opts.iframeBody || ""
   this.snuggieAPI = opts.snuggieAPI || window.location.protocol + '//' + window.location.host
   this.showControls(opts.controls)
   var defaultEditorOptions = {
@@ -33,8 +35,8 @@ function Sandbox(opts) {
     var body = self.editor.editor.getValue()
     request({method: "POST", body: body, url: this.snuggieAPI, json: true}, function(err, resp, json) {
       // setTimeout is because iframes report inaccurate window.innerWidth/innerHeight, even after DOMContentLoaded!
-      var body = '<script type="text/javascript"> setTimeout(function(){' + json.bundle + '}, 0)</script>'
-      self.iframe.setHTML({ head: self.iframeStyle, body: body })
+      var body = self.iframeBody + '<script type="text/javascript"> setTimeout(function(){' + json.bundle + '}, 0)</script>'
+      self.iframe.setHTML({ head: self.iframeHead + self.iframeStyle, body: body })
       self.emit('bundleEnd')
     })
   })
