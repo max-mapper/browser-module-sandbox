@@ -28,6 +28,20 @@ var sandbox = sandbox({
 })
 ```
 
+## events
+
+### sandbox.on('modules', function(modules) {})
+
+modules is the array of modules that gets parsed out of the bundle entry by the `detective` module
+
+### sandbox.on('bundleStart', function() {})
+
+emits when the bundle request begins
+
+### sandbox.on('bundleEnd', function(html) {})
+
+emits when the bundle request finishes. `html` is an object that has the iframe header contents and the full bundle body (made of up all the bundles + the entry in an executable form)
+
 ## license
 
 BSD
