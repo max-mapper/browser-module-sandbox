@@ -1,16 +1,13 @@
 # browser-module-sandbox
 
-editor for code that gets 'compiled' on the server with node and then sent back and executed on the client.
+uses browserify-cdn to run node code in an iframe
 
-there are two "panes", one is a codemirror editor pane and other is a display pane that shows the output (if any) of the program. there is also a built in toolbar UI widget for switching between the two states
-
-for an example go see the [voxel-gist](http://github.com/maxogden/voxel-gist) project
-
-to compile the dependencies on the server you should run an instance of [snuggie](https://github.com/maxogden/snuggie)
+requires a hosted browserify-cdn
 
 ```
 npm install browser-module-sandbox
 ```
+
 
 ## usage
 
@@ -20,28 +17,16 @@ var sandbox = require('browser-module-sandbox')
 
 ## sandbox(options)
 
-you need to give it dom elements as targets that it will use to to render itself. `output` and `editor` for the two "panes" that get turned on and off based on the state of `control`.
-
 ```javascript
 var sandbox = sandbox({
-  snuggieAPI: 'http://localhost:8000', // defaults to the current browser domain root
-  defaultCode: "var foo = require('foo')", // defaults to 'var url = require("url")'
-  output: document.querySelector('#output'),
-  controls: document.querySelector('#controls'),
-  editor: document.querySelector('#edit'),
-  codemirrorOptions: {},
+  cdn: 'http://localhost:8000', // browserify-cdn API endpoint, defaults to the current browser domain root,
+  container: dom element where the iframe should be appended,
   iframeHead: string that gets prepended to the `<head>` of the output iframe,
-  iframeBody: string that gets prepended to the `<body>` of the output iframe
+  iframeBody: string that gets prepended to the `<body>` of the output iframe,
+  iframeStyle: string for css, gets appended to end of iframeHead,
+  iframe: iframe instance, default creates a new one inside container
 })
 ```
-
-## sandbox.on('bundleStart') && sandbox.on('bundleEnd')
-
-these fire when the output pane is activated. the sandbox will emit `bundleStart`, upload the contents of the editor to the server, and then when it receives and renders them will emit `bundleEnd`
-
-## sandbox.on('edit')
-
-this fires when the edit button is clicked, which also switches back to the editor
 
 ## license
 
