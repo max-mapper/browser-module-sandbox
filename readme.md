@@ -15,7 +15,9 @@ npm install browser-module-sandbox
 var sandbox = require('browser-module-sandbox')
 ```
 
-## sandbox(options)
+## initialize
+
+### sandbox(options)
 
 ```javascript
 var sandbox = sandbox({
@@ -27,6 +29,15 @@ var sandbox = sandbox({
   iframe: iframe instance, default creates a new one inside container
 })
 ```
+## bundling
+
+### sandbox.bundle(entry, preferredVersions)
+
+```
+sandbox.bundle('console.log(require("underscore"))', {'underscore': '1.3.3'})
+```
+
+`preferredVersions` is optional, version will otherwise default to `latest`
 
 ## events
 
