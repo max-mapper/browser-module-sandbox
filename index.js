@@ -24,7 +24,6 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
   var self = this
   
   var modules = detective(entry)
-  self.emit('modules', modules)
   
   var body = {
     "options": {
@@ -40,6 +39,8 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
   
   self.emit('bundleStart')
   
+  if (modules.length === 0) return makeIframe(entry)
+  
   request({method: "POST", body: body, url: this.cdn + '/multi', json: true}, function(err, resp, json) {
     if (err) {
       self.emit('bundleEnd')
@@ -47,20 +48,27 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
     }
     
     var allBundles = ''
+    var packages = []
     Object.keys(json).map(function(module) {
-      allBundles += json[module]
+      allBundles += json[module]['bundle']
+      packages.push(json[module]['package'])
     })
     
+    self.emit('modules', packages)
+    
+    makeIframe(allBundles + entry)
+  })
+  
+  function makeIframe(script) {
     // setTimeout is because iframes report inaccurate window.innerWidth/innerHeight, even after DOMContentLoaded!
     var body = self.iframeBody + 
       '<script type="text/javascript"> setTimeout(function(){' + 
-        allBundles +
-        entry +
+        script +
       '}, 0)</script>'
-    var html = { head: self.iframeHead + self.iframeStyle, body: body }
+    var html = { head: self.iframeHead + self.iframeStyle, body: body, script: script }
     self.iframe.setHTML(html)
     self.emit('bundleEnd', html)
-  })
+  }
 }
 
 inherits(Sandbox, events.EventEmitter)
