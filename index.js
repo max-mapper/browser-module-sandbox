@@ -3,6 +3,7 @@ var iframe = require('iframe')
 var events = require('events')
 var request = require('browser-request')
 var detective = require('detective')
+var createCache = require('browser-module-cache')
 
 module.exports = function(opts) {
   return new Sandbox(opts)
@@ -20,6 +21,7 @@ function Sandbox(opts) {
     "html, body { margin: 0; padding: 0; border: 0; }\n" + 
     opts.iframeStyle + 
     "</style>"
+  this.cache = createCache()
 }
 
 Sandbox.prototype.bundle = function(entry, preferredVersions) {
@@ -28,41 +30,62 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
   
   var modules = detective(entry)
   
-  var body = {
-    "options": {
-      "debug": true
-    },
-    "dependencies": {}
-  }
-  
-  modules.map(function(module) {
-    var version = preferredVersions[module] || 'latest'
-    body.dependencies[module] = version
-  })
-  
   self.emit('bundleStart')
   
-  if (modules.length === 0) return makeIframe(entry)
-  
-  request({method: "POST", body: body, url: this.cdn + '/multi', json: true}, function(err, resp, json) {
+  if (modules.length === 0) return makeIframe()
+
+  var allBundles = ''
+  var packages = []
+
+  self.cache.get(function(err, cached) {
     if (err) {
       self.emit('bundleEnd')
       return err
     }
-    
-    var allBundles = ''
-    var packages = []
+
+    var download = []
+    modules.forEach(function(module) {
+      if (cached[module]) {
+        allBundles += cached[module]['bundle']
+        packages.push(cached[module]['package'])
+      } else {
+        download.push(module)
+      }
+    })
+    if (download.length === 0) return makeIframe(allBundles)
+
+    var body = {
+      "options": {
+        "debug": true
+      },
+      "dependencies": {}
+    }
+    download.map(function(module) {
+      var version = preferredVersions[module] || 'latest'
+      body.dependencies[module] = version
+    })
+    request({method: "POST", body: body, url: self.cdn + '/multi', json: true}, downloadedModules)
+  })
+
+  function downloadedModules(err, resp, json) {
+    if (err) {
+      self.emit('bundleEnd')
+      return err
+    }
+
     Object.keys(json).map(function(module) {
       allBundles += json[module]['bundle']
       packages.push(json[module]['package'])
     })
-    
-    self.emit('modules', packages)
-    
-    makeIframe(allBundles + entry)
-  })
+
+    self.cache.put(json, function() {
+      self.emit('modules', packages)
+      makeIframe(allBundles)
+    })
+  }
   
   function makeIframe(script) {
+    script = script + entry
     // setTimeout is because iframes report inaccurate window.innerWidth/innerHeight, even after DOMContentLoaded!
     var body = self.iframeBody + 
       '<script type="text/javascript"> setTimeout(function(){' + 
