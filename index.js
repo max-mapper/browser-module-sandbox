@@ -16,7 +16,10 @@ function Sandbox(opts) {
   this.iframeBody = opts.iframeBody || ""
   this.cdn = opts.cdn || window.location.protocol + '//' + window.location.host
   this.iframe = iframe({ container: this.container, scrollingDisabled: true })
-  this.iframeStyle = "<style type='text/css'> html, body { margin: 0; padding: 0; border: 0; } </style>"
+  this.iframeStyle = "<style type='text/css'>" + 
+    "html, body { margin: 0; padding: 0; border: 0; }\n" + 
+    opts.iframeStyle + 
+    "</style>"
 }
 
 Sandbox.prototype.bundle = function(entry, preferredVersions) {
