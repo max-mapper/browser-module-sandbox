@@ -21,7 +21,7 @@ function Sandbox(opts) {
     "html, body { margin: 0; padding: 0; border: 0; }\n" + 
     opts.iframeStyle + 
     "</style>"
-  this.cache = createCache()
+  this.cache = createCache(opts.cacheOpts)
 }
 
 Sandbox.prototype.bundle = function(entry, preferredVersions) {
