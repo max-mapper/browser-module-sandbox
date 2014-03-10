@@ -52,7 +52,11 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
         download.push(module)
       }
     })
-    if (download.length === 0) return makeIframe(allBundles)
+    
+    if (download.length === 0) {
+      self.emit('modules', packages)
+      return makeIframe(allBundles)
+    }
 
     var body = {
       "options": {
@@ -60,10 +64,12 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
       },
       "dependencies": {}
     }
+    
     download.map(function(module) {
       var version = preferredVersions[module] || 'latest'
       body.dependencies[module] = version
     })
+    
     request({method: "POST", body: body, url: self.cdn + '/multi', json: true}, downloadedModules)
   })
 
