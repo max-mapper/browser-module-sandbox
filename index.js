@@ -70,14 +70,19 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
       body.dependencies[module] = version
     })
     
-    request({method: "POST", body: body, url: self.cdn + '/multi', json: true}, downloadedModules)
+    request({method: "POST", body: JSON.stringify(body), url: self.cdn + '/multi'}, downloadedModules)
   })
 
-  function downloadedModules(err, resp, json) {
+  function downloadedModules(err, resp, body) {
     if (err) {
-      self.emit('bundleEnd')
+      self.emit('bundleError', err)
       return err
+    } else if (resp.statusCode == 500) {
+      self.emit('bundleError', body)
+      return body
     }
+
+    var json = JSON.parse(body)
 
     Object.keys(json).map(function(module) {
       allBundles += json[module]['bundle']
