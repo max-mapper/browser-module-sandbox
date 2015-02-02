@@ -12,6 +12,7 @@ module.exports = function(opts) {
 function Sandbox(opts) {
   var self = this
   if (!opts) opts = {}
+  this.name = opts.name
   this.container = opts.container || document.body
   this.iframeHead = opts.iframeHead || ""
   this.iframeBody = opts.iframeBody || ""
@@ -23,6 +24,8 @@ function Sandbox(opts) {
     "</style>"
   this.cache = createCache(opts.cacheOpts)
 }
+
+inherits(Sandbox, events.EventEmitter)
 
 Sandbox.prototype.bundle = function(entry, preferredVersions) {
   if (!preferredVersions) preferredVersions = {}
@@ -100,12 +103,11 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
     // setTimeout is because iframes report inaccurate window.innerWidth/innerHeight, even after DOMContentLoaded!
     var body = self.iframeBody +
         '<script type="text/javascript" src="data:text/javascript;charset=UTF-8,'
-      + encodeURIComponent('setTimeout(function(){' + script + '}, 0)')
+      + encodeURIComponent('setTimeout(function(){\n;' + script + '\n;}, 0)')
       + '"></script>'
     var html = { head: self.iframeHead + self.iframeStyle, body: body, script: script }
+    if (self.name) html.name = self.name
     self.iframe.setHTML(html)
     self.emit('bundleEnd', html)
   }
 }
-
-inherits(Sandbox, events.EventEmitter)
