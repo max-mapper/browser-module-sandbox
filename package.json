@@ -1,6 +1,6 @@
 {
   "name": "browser-module-sandbox",
-  "version": "1.3.8",
+  "version": "1.3.9",
   "description": "uses browserify-cdn to run node code in an iframe",
   "repository": {
     "type": "git",
