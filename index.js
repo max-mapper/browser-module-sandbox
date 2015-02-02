@@ -12,6 +12,7 @@ module.exports = function(opts) {
 function Sandbox(opts) {
   var self = this
   if (!opts) opts = {}
+  this.name = opts.name
   this.container = opts.container || document.body
   this.iframeHead = opts.iframeHead || ""
   this.iframeBody = opts.iframeBody || ""
@@ -23,6 +24,8 @@ function Sandbox(opts) {
     "</style>"
   this.cache = createCache(opts.cacheOpts)
 }
+
+inherits(Sandbox, events.EventEmitter)
 
 Sandbox.prototype.bundle = function(entry, preferredVersions) {
   if (!preferredVersions) preferredVersions = {}
@@ -108,5 +111,3 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
     self.emit('bundleEnd', html)
   }
 }
-
-inherits(Sandbox, events.EventEmitter)
