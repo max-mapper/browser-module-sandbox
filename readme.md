@@ -21,6 +21,7 @@ var sandbox = require('browser-module-sandbox')
 
 ```javascript
 var sandbox = sandbox({
+  name: iframe name attribute,
   cdn: 'http://localhost:8000', // browserify-cdn API endpoint, defaults to the current browser domain root,
   container: dom element where the iframe should be appended,
   iframeHead: string that gets prepended to the `<head>` of the output iframe,
