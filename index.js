@@ -35,7 +35,9 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
   
   var modules = detective(entry)
   
-  self.emit('bundleStart')
+  process.nextTick(function() {
+    self.emit('bundleStart')
+  })
   
   if (modules.length === 0) return makeIframe()
 
