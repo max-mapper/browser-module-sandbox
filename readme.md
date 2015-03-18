@@ -50,6 +50,10 @@ modules is the array of modules that gets parsed out of the bundle entry by the 
 
 emits when the bundle request begins
 
+### sandbox.on('bundleContent', function(body) {})
+
+emits when the iframe content is being built, `body` is a string made up of all the bundles (NOTE: it doesn't contain `entry`)
+
 ### sandbox.on('bundleEnd', function(html) {})
 
 emits when the bundle request finishes. `html` is an object that has the iframe header contents and the full bundle body (made of up all the bundles + the entry in an executable form)
