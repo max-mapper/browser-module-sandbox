@@ -19,8 +19,8 @@ function Sandbox(opts) {
   this.cdn = opts.cdn || window.location.protocol + '//' + window.location.host
   this.iframe = iframe({ container: this.container, scrollingDisabled: true })
   this.iframeStyle = "<style type='text/css'>" + 
-    "html, body { margin: 0; padding: 0; border: 0; }\n" + 
-    opts.iframeStyle + 
+    "html, body { margin: 0; padding: 0; border: 0; }\n" +
+    opts.iframeStyle +
     "</style>"
   this.cache = createCache(opts.cacheOpts)
 }
@@ -48,6 +48,8 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
 
     var download = []
     modules.forEach(function(module) {
+      module = module + '@' + (preferredVersions[module] || 'latest')
+
       if (cached[module]) {
         allBundles += cached[module]['bundle']
         packages.push(cached[module]['package'])
@@ -69,8 +71,10 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
     }
     
     download.map(function(module) {
-      var version = preferredVersions[module] || 'latest'
-      body.dependencies[module] = version
+      var tokens = module.split('@')
+      var name = tokens[0]
+      var version = tokens[1]
+      body.dependencies[name] = version
     })
     
     request({method: "POST", body: JSON.stringify(body), url: self.cdn + '/multi'}, downloadedModules)
@@ -87,7 +91,24 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
 
     var json = JSON.parse(body)
 
-    Object.keys(json).map(function(module) {
+    // fix json properties to also hold the package version
+    // e.g.
+    // "foo": {
+    //  "package": {
+    //    "version": "1.0.0"
+    //  }
+    // }
+    // to:
+    // "foo@1.0.0": { ... }
+    //
+    // NOTE: "foo@latest" is never cached because browserify-cdn
+    // always returns a valid semver :)
+    Object.keys(json).forEach(function (module) {
+      json[module + '@' + module.package.version] = json[module]
+      delete json[module]
+    })
+
+    Object.keys(json).forEach(function(module) {
       allBundles += json[module]['bundle']
       packages.push(json[module]['package'])
     })
