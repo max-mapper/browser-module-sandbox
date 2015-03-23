@@ -17,7 +17,9 @@ function Sandbox(opts) {
   this.iframeHead = opts.iframeHead || ""
   this.iframeBody = opts.iframeBody || ""
   this.cdn = opts.cdn || window.location.protocol + '//' + window.location.host
-  this.iframe = iframe({ container: this.container, scrollingDisabled: true })
+  this.scrollingDisabled = opts.scrollingDisabled || true
+  this.sandboxAttributes = opts.sandboxAttributes
+  this.iframe = iframe({ container: this.container, scrollingDisabled: this.scrollingDisabled })
   this.iframeStyle = "<style type='text/css'>" + 
     "html, body { margin: 0; padding: 0; border: 0; }\n" +
     opts.iframeStyle +
@@ -33,7 +35,9 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
   
   var modules = detective(entry)
   
-  self.emit('bundleStart')
+  process.nextTick(function() {
+    self.emit('bundleStart')
+  })
   
   if (modules.length === 0) return makeIframe()
 
@@ -129,8 +133,9 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
         '<script type="text/javascript" src="data:text/javascript;charset=UTF-8,'
       + encodeURIComponent('setTimeout(function(){\n;' + script + '\n;}, 0)')
       + '"></script>'
-    var html = { head: self.iframeHead + self.iframeStyle, body: body, script: script }
+    var html = { head: self.iframeHead + self.iframeStyle, body: body }
     if (self.name) html.name = self.name
+    if (self.sandboxAttributes) html.sandboxAttributes = self.sandboxAttributes
     self.iframe.setHTML(html)
     self.emit('bundleEnd', html)
   }
