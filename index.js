@@ -51,7 +51,9 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
       module = module + '@' + (preferredVersions[module] || 'latest')
 
       if (cached[module]) {
-        allBundles += cached[module]['bundle']
+        var tokens = module.split('@');
+        var bundle = !tokens[0] ? cached[module]['bundle'].replace(encodeURIComponent(tokens[1]), tokens[1]) : cached[module]['bundle']
+        allBundles += bundle
         packages.push(cached[module]['package'])
       } else {
         download.push(module)
@@ -111,12 +113,14 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
     // always returns a valid semver :)
     Object.keys(json).forEach(function (module) {
       var existing = json[module]
-      json[module + '@' + existing.package.version] = json[module]
+      json[decodeURIComponent(module) + '@' + existing.package.version] = json[module]
       delete json[module]
     })
 
     Object.keys(json).forEach(function(module) {
-      allBundles += json[module]['bundle']
+      var tokens = module.split('@');
+      var bundle = !tokens[0] ? json[module]['bundle'].replace(encodeURIComponent(tokens[1]), tokens[1]) : json[module]['bundle']
+      allBundles += bundle
       packages.push(json[module]['package'])
     })
 
