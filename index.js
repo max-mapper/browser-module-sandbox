@@ -18,7 +18,7 @@ function Sandbox(opts) {
   this.iframeBody = opts.iframeBody || ""
   this.cdn = opts.cdn || window.location.protocol + '//' + window.location.host
   this.iframe = iframe({ container: this.container, scrollingDisabled: true })
-  this.iframeStyle = "<style type='text/css'>" + 
+  this.iframeStyle = "<style type='text/css'>" +
     "html, body { margin: 0; padding: 0; border: 0; }\n" +
     opts.iframeStyle +
     "</style>"
@@ -30,11 +30,11 @@ inherits(Sandbox, events.EventEmitter)
 Sandbox.prototype.bundle = function(entry, preferredVersions) {
   if (!preferredVersions) preferredVersions = {}
   var self = this
-  
+
   var modules = detective(entry)
-  
+
   self.emit('bundleStart')
-  
+
   if (modules.length === 0) return makeIframe()
 
   var allBundles = ''
@@ -51,13 +51,15 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
       module = module + '@' + (preferredVersions[module] || 'latest')
 
       if (cached[module]) {
-        allBundles += cached[module]['bundle']
+        var tokens = module.split('@');
+        var bundle = !tokens[0] ? cached[module]['bundle'].replace(encodeURIComponent(tokens[1]), tokens[1]) : cached[module]['bundle']
+        allBundles += bundle
         packages.push(cached[module]['package'])
       } else {
         download.push(module)
       }
     })
-    
+
     if (download.length === 0) {
       self.emit('modules', packages)
       return makeIframe(allBundles)
@@ -69,14 +71,20 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
       },
       "dependencies": {}
     }
-    
+
     download.map(function(module) {
       var tokens = module.split('@')
-      var name = tokens[0]
-      var version = tokens[1]
+      var name, version
+      if (!tokens[0]) {
+        name = '@'+encodeURIComponent(tokens[1])
+        version = tokens[2]
+      } else {
+        name = tokens[0]
+        version = tokens[1]
+      }
       body.dependencies[name] = version
     })
-    
+
     request({method: "POST", body: JSON.stringify(body), url: self.cdn + '/multi'}, downloadedModules)
   })
 
@@ -105,12 +113,14 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
     // always returns a valid semver :)
     Object.keys(json).forEach(function (module) {
       var existing = json[module]
-      json[module + '@' + existing.package.version] = json[module]
+      json[decodeURIComponent(module) + '@' + existing.package.version] = json[module]
       delete json[module]
     })
 
     Object.keys(json).forEach(function(module) {
-      allBundles += json[module]['bundle']
+      var tokens = module.split('@');
+      var bundle = !tokens[0] ? json[module]['bundle'].replace(encodeURIComponent(tokens[1]), tokens[1]) : json[module]['bundle']
+      allBundles += bundle
       packages.push(json[module]['package'])
     })
 
@@ -119,7 +129,7 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
       makeIframe(allBundles)
     })
   }
-  
+
   function makeIframe(script) {
     script = (script || '')
     self.emit('bundleContent', script)
