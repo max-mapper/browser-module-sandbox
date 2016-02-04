@@ -133,12 +133,20 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
   function makeIframe(script) {
     script = (script || '')
     self.emit('bundleContent', script)
+
     script = script + entry
+
     // setTimeout is because iframes report inaccurate window.innerWidth/innerHeight, even after DOMContentLoaded!
-    var body = self.iframeBody +
+    // check for </script> in code to use faster way executing script (https://github.com/maxogden/browser-module-sandbox/issues/13)
+    var scriptTag = script.indexOf('</script>') === -1 ? (
+        '<script type="text/javascript">setTimeout(function(){\n;' + script + '\n;}, 0)</script>'
+    ) : (
         '<script type="text/javascript" src="data:text/javascript;charset=UTF-8,'
-      + encodeURIComponent('setTimeout(function(){\n;' + script + '\n;}, 0)')
-      + '"></script>'
+        + encodeURIComponent('setTimeout(function(){\n;' + script + '\n;}, 0)')
+        + '"></script>'
+    )
+
+    var body = self.iframeBody + scriptTag
     var html = { head: self.iframeHead + self.iframeStyle, body: body, script: script }
     if (self.name) html.name = self.name
     self.iframe.setHTML(html)
