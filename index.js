@@ -33,6 +33,11 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
 
   var modules = detective(entry)
 
+  // filter empty strings etc. (maybe should be moved to detective?)
+  modules = modules.filter(function (mod) {
+    return mod
+  });
+
   self.emit('bundleStart')
 
   if (modules.length === 0) return makeIframe()
