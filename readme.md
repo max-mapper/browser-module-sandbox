@@ -27,7 +27,7 @@ var sandbox = Sandbox({
   iframeHead: string that gets prepended to the `<head>` of the output iframe,
   iframeBody: string that gets prepended to the `<body>` of the output iframe,
   iframeStyle: string for css, gets appended to end of iframeHead,
-  iframeSandbox: array of of capability flag strings,
+  iframeSandbox: array of capability flag strings,
   iframe: iframe instance, default creates a new one inside container
 })
 ```
