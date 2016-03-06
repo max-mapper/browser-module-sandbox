@@ -16,8 +16,9 @@ function Sandbox(opts) {
   this.container = opts.container || document.body
   this.iframeHead = opts.iframeHead || ""
   this.iframeBody = opts.iframeBody || ""
+  this.iframeSandbox = opts.iframeSandbox || ""
   this.cdn = opts.cdn || window.location.protocol + '//' + window.location.host
-  this.iframe = iframe({ container: this.container, scrollingDisabled: true })
+  this.iframe = iframe({ container: this.container, scrollingDisabled: true, sandboxAttributes: this.iframeSandbox })
   this.iframeStyle = "<style type='text/css'>" +
     "html, body { margin: 0; padding: 0; border: 0; }\n" +
     opts.iframeStyle +
@@ -152,7 +153,7 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
     )
 
     var body = self.iframeBody + scriptTag
-    var html = { head: self.iframeHead + self.iframeStyle, body: body, script: script }
+    var html = { head: self.iframeHead + self.iframeStyle, body: body, script: script, sandboxAttributes: self.iframeSandbox }
     if (self.name) html.name = self.name
     self.iframe.setHTML(html)
     self.emit('bundleEnd', html)
