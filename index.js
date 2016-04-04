@@ -1,3 +1,5 @@
+'use strict';
+
 var inherits = require('inherits')
 var iframe = require('iframe')
 var events = require('events')
