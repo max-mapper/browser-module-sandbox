@@ -56,7 +56,11 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
 
     var download = []
     modules.forEach(function(module) {
-      module = module + '@' + (preferredVersions[module] || 'latest')
+      if (module.indexOf('@') <= 0) {
+        module = module + '@' + (preferredVersions[module] || 'latest')
+      } else {
+        entry = entry.replace(module, module.split('@')[0])
+      }
 
       if (cached[module]) {
         var tokens = module.split('@');
