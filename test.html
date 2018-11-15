@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+</head>
+<body>
+  <script src="dist/browser-module-sandbox.js"></script>
+  <script>
+    var sandbox = Sandbox({
+      name: 'sandbox',
+      cdn: 'https://wzrd.now.sh',
+      cacheOpts: {
+        inMemory: true
+      },
+      iframeStyle: 'body, html { height: 100%; width: 100%; overflow: auto }',
+      iframeSandbox: [
+        'allow-forms',
+        'allow-popups',
+        'allow-scripts',
+        'allow-same-origin',
+        'allow-modals'
+      ]
+    });
+
+    sandbox.bundle('console.log(require("underscore"))', {'underscore': '1.3.3'});
+  </script>
+</body>
+</html>

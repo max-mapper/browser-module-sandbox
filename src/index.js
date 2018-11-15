@@ -153,9 +153,9 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
 
     // check for </script> in code to use faster way executing script (https://github.com/maxogden/browser-module-sandbox/issues/13)
     var scriptTag = script.indexOf('</script>') === -1 ? (
-        '<script type="text/javascript">' + script + '</script>'
+      '<script type="text/javascript">' + script + '</script>'
     ) : (
-        '<script type="text/javascript" src="data:text/javascript;charset=UTF-8,'+ encodeURIComponent(script) + '"></script>'
+      '<script type="text/javascript" src="data:text/javascript;charset=UTF-8,'+ encodeURIComponent(script) + '"></script>'
     )
 
     var body = self.iframeBody + scriptTag

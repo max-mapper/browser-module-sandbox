@@ -10,18 +10,23 @@
     "browser-module-cache": "~0.1.3",
     "browser-request": "~0.3.3",
     "detective": "^4.0.0",
-    "iframe": "voronianski/iframe",
+    "iframe": "^1.0.0",
     "inherits": "^2.0.1"
   },
   "bugs": {
     "url": "https://github.com/maxogden/browser-module-sandbox/issues"
   },
   "homepage": "https://github.com/maxogden/browser-module-sandbox",
-  "main": "index.js",
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "main": "./src/index.js",
+  "devDependencies": {
+    "uglifyjs-webpack-plugin": "^2.0.1",
+    "webpack": "^4.25.1",
+    "webpack-cli": "^3.1.2"
   },
-  "author": "",
-  "license": "ISC"
+  "scripts": {
+    "build": "NODE_ENV=production webpack --config webpack.config --progress --colors",
+    "watch": "webpack --config webpack.config --colors --watch",
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "license": "MIT"
 }
