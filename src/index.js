@@ -117,8 +117,10 @@ Sandbox.prototype.bundle = function(entry, preferredVersions) {
 
   function downloadedModules(err, resp) {
     if (err) {
-      self.emit("bundleError", err);
-      return err;
+      var errText = err.response && err.response.text;
+
+      self.emit("bundleError", errText);
+      return errText;
     } else if (resp.statusCode == 500) {
       self.emit("bundleError", resp.text);
       return resp.text;
